@@ -27,9 +27,9 @@ model Customer {
 model Transaction {
   id         Int       @id @default(autoincrement())
   status TransactionStatus
-  date String 
-  baseFee String
-  deliveryFee String
+  date DateTime 
+  baseFee Float
+  deliveryFee Float
   customerID Int
   customer    Customer  @relation(fields: [customerID], references: [id])
   transactionDetails TransactionDetail[] // Relación inversa con TransactionDetail
