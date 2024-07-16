@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { PrismaService } from 'src/prisma.service';
+import { TokenizationCard } from 'src/integrations/wompi/tokenizationCard.service';
 
 @Injectable()
 export class TransactionsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private tokenizeCard: TokenizationCard,
+  ) {}
 
   async createTransaction(transaction: CreateTransactionDto) {
     try {
@@ -13,7 +17,15 @@ export class TransactionsService {
         data: transaction,
       });
       if (createdTransaction) {
-        return createdTransaction; // Retorna el objeto de transacción creado
+        const tokenizationResponse = await this.tokenizeCard.tonkenizateCard(
+          '4242424242424242',
+          '06',
+          '29',
+          '123',
+          'Pedro Perez',
+        );
+
+        return tokenizationResponse;
       } else {
         throw new Error('No se pudo crear la transacción');
       }
