@@ -4,13 +4,16 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { PrismaService } from 'src/prisma.service';
 import { TokenizationCard } from 'src/integrations/wompi/tokenizationCard.service';
 import { AcceptanceToken } from 'src/integrations/wompi/get-acceptanceToken.service';
+import { PaymentSource } from 'src/integrations/wompi/create-paymentSource.service';
+import { generateIntegritySignature } from 'src/helpers/crypto/integrityHash';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     private prisma: PrismaService,
     private tokenizeCard: TokenizationCard,
-    private acceptanceToken: AcceptanceToken,
+    private getAcceptanceToken: AcceptanceToken,
+    private paymentSource: PaymentSource,
   ) {}
 
   async createTransaction(transaction: CreateTransactionDto) {
@@ -27,11 +30,32 @@ export class TransactionsService {
           'Pedro Perez',
         );
         const { status, data } = tokenizationResponse;
+        const { id } = data;
         if (status === 'CREATED') {
           try {
             const acceptanceTokenResponse =
-              await this.acceptanceToken.getAcceptanceToken();
-            console.log(acceptanceTokenResponse);
+              await this.getAcceptanceToken.getAcceptanceToken();
+            const acceptance_token =
+              acceptanceTokenResponse.data.presigned_acceptance
+                .acceptance_token;
+            if (acceptance_token && acceptance_token !== null) {
+              const paymentSourceResponse =
+                await this.paymentSource.createPaymentSource(
+                  'test@correo.com',
+                  'CARD',
+                  id,
+                  acceptance_token,
+                );
+              if (paymentSourceResponse && paymentSourceResponse !== null) {
+                const signature = generateIntegritySignature(
+                  'sJK4489dDjkd390ds02',
+                  4990000,
+                  'COP',
+                  'stagtest_integrity_nAIBuqayW70XpUqJS4qf4STYiISd89Fp',
+                );
+                console.log(signature);
+              }
+            }
           } catch {
             throw new Error('No se pudo obtener el token');
           }
