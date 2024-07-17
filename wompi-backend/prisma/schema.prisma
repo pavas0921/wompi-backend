@@ -19,6 +19,7 @@ model Product {
 model Customer {
   id         Int       @id @default(autoincrement())
   fullName String
+  identification String
   address String
   email String
   transactions Transaction[] // Relación inversa

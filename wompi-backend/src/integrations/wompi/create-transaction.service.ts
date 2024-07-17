@@ -32,8 +32,6 @@ export class Transactions {
       payment_source_id,
     };
 
-    console.log('body', body);
-
     try {
       const response = await axios.post(url, body, { headers });
       return response.data;

@@ -4,6 +4,8 @@ import {
   IsInt,
   IsEnum,
   IsDateString,
+  IsString,
+  IsEmail,
 } from 'class-validator';
 import { TransactionStatus } from 'src/helpers/enum/transactionStatusEnum';
 
@@ -27,4 +29,28 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   @IsInt()
   customerID: number;
+
+  @IsNotEmpty()
+  @IsString()
+  number: string;
+
+  @IsNotEmpty()
+  @IsString()
+  cvc: string;
+
+  @IsNotEmpty()
+  @IsString()
+  exp_month: string;
+
+  @IsNotEmpty()
+  @IsString()
+  exp_year: string;
+
+  @IsNotEmpty()
+  @IsString()
+  card_holder: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  customer_email: string;
 }

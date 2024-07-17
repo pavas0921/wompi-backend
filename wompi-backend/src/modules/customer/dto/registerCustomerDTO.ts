@@ -12,4 +12,8 @@ export class registerCustomerDTO {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  identification: string;
 }
