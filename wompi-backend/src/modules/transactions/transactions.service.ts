@@ -6,6 +6,7 @@ import { TokenizationCard } from 'src/integrations/wompi/tokenizationCard.servic
 import { AcceptanceToken } from 'src/integrations/wompi/get-acceptanceToken.service';
 import { PaymentSource } from 'src/integrations/wompi/create-paymentSource.service';
 import { generateIntegritySignature } from 'src/helpers/crypto/integrityHash';
+import { Transactions } from 'src/integrations/wompi/create-transaction.service';
 
 @Injectable()
 export class TransactionsService {
@@ -14,6 +15,7 @@ export class TransactionsService {
     private tokenizeCard: TokenizationCard,
     private getAcceptanceToken: AcceptanceToken,
     private paymentSource: PaymentSource,
+    private transaction: Transactions,
   ) {}
 
   async createTransaction(transaction: CreateTransactionDto) {
@@ -48,12 +50,25 @@ export class TransactionsService {
                 );
               if (paymentSourceResponse && paymentSourceResponse !== null) {
                 const signature = generateIntegritySignature(
-                  'sJK4489dDjkd390ds02',
+                  'asJK4489dDjkd390ds02',
                   4990000,
                   'COP',
                   'stagtest_integrity_nAIBuqayW70XpUqJS4qf4STYiISd89Fp',
                 );
-                console.log(signature);
+                const paymentMethod = {
+                  installments: 2,
+                };
+                const transactionResponse =
+                  await this.transaction.createTransaction(
+                    4990000,
+                    'COP',
+                    signature,
+                    'prueba@gmail.com',
+                    paymentMethod,
+                    'asJK4489dDjkd390ds02',
+                    paymentSourceResponse.data.id,
+                  );
+                console.log('transaction result: ', transactionResponse);
               }
             }
           } catch {

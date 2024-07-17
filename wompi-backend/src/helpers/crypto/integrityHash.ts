@@ -1,6 +1,5 @@
 import exp from 'constants';
 import * as crypto from 'crypto';
-import { retry } from 'rxjs';
 
 export function generateIntegritySignature(
   reference: string,
