@@ -2,9 +2,10 @@
 
 import { Module } from '@nestjs/common';
 import { TokenizationCard } from './wompi/tokenizationCard.service';
+import { AcceptanceToken } from './wompi/get-acceptanceToken.service';
 
 @Module({
-  providers: [TokenizationCard],
-  exports: [TokenizationCard],
+  providers: [TokenizationCard, AcceptanceToken],
+  exports: [TokenizationCard, AcceptanceToken],
 })
 export class IntegrationsModule {}

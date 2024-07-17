@@ -3,12 +3,14 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { PrismaService } from 'src/prisma.service';
 import { TokenizationCard } from 'src/integrations/wompi/tokenizationCard.service';
+import { AcceptanceToken } from 'src/integrations/wompi/get-acceptanceToken.service';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     private prisma: PrismaService,
     private tokenizeCard: TokenizationCard,
+    private acceptanceToken: AcceptanceToken,
   ) {}
 
   async createTransaction(transaction: CreateTransactionDto) {
@@ -24,7 +26,16 @@ export class TransactionsService {
           '123',
           'Pedro Perez',
         );
-
+        const { status, data } = tokenizationResponse;
+        if (status === 'CREATED') {
+          try {
+            const acceptanceTokenResponse =
+              await this.acceptanceToken.getAcceptanceToken();
+            console.log(acceptanceTokenResponse);
+          } catch {
+            throw new Error('No se pudo obtener el token');
+          }
+        }
         return tokenizationResponse;
       } else {
         throw new Error('No se pudo crear la transacción');

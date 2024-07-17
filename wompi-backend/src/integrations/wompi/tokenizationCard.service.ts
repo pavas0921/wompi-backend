@@ -6,7 +6,6 @@ import * as crypto from 'crypto';
 export class TokenizationCard {
   private readonly baseURL = 'https://api-sandbox.co.uat.wompi.dev/v1';
   private readonly publicKey = 'pub_stagtest_g2u0HQd3ZMh05hsSgTS2lUV8t3s4mOt7';
-  private readonly privateKey = 'prv_stagtest_5i0ZGIGiFcDQifYsXxvsny7Y37tKqFWg';
 
   async tonkenizateCard(
     number: string,
