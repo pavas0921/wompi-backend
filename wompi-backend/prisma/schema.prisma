@@ -58,7 +58,8 @@ model TransactionDetail {
 
 enum TransactionStatus {
   PENDING
-  PROCESSING
-  COMPLETED
-  CANCELLED
+  APPROVED
+  DECLINED
+  VOIDED
+  ERROR
 }

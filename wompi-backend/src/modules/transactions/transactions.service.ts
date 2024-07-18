@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpStatus } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -43,79 +43,110 @@ export class TransactionsService {
       const createdTransaction = await this.prisma.transaction.create({
         data: transactionData,
       });
-      console.log(createdTransaction);
-      if (createdTransaction) {
-        const tokenizationResponse = await this.tokenizeCard.tonkenizateCard(
-          cardData.number,
-          cardData.exp_month,
-          cardData.exp_year,
-          cardData.cvc,
-          cardData.card_holder,
-        );
-        const { status, data } = tokenizationResponse;
-        const { id } = data;
-        if (status === 'CREATED') {
-          try {
-            const acceptanceTokenResponse =
-              await this.getAcceptanceToken.getAcceptanceToken();
-            const acceptance_token =
-              acceptanceTokenResponse.data.presigned_acceptance
-                .acceptance_token;
-            if (acceptance_token && acceptance_token !== null) {
-              const paymentSourceResponse =
-                await this.paymentSource.createPaymentSource(
-                  transaction.customer_email,
-                  'CARD',
-                  id,
-                  acceptance_token,
-                );
-              if (paymentSourceResponse && paymentSourceResponse !== null) {
-                const paymentRefence = generatePaymentReference(
-                  transaction.customer_email,
-                  Date.now(),
-                );
-                const signature = generateIntegritySignature(
-                  paymentRefence,
-                  (transaction.baseFee + transaction.deliveryFee) * 100,
-                  'COP',
-                  'stagtest_integrity_nAIBuqayW70XpUqJS4qf4STYiISd89Fp',
-                );
-                const paymentMethod = {
-                  installments: 2,
-                };
-                const transactionResponse =
-                  await this.transaction.createTransaction(
-                    (transaction.baseFee + transaction.deliveryFee) * 100,
-                    'COP',
-                    signature,
-                    transaction.customer_email,
-                    paymentMethod,
-                    paymentRefence,
-                    paymentSourceResponse.data.id,
-                  );
-                if (transactionResponse) {
-                  const paymentStatusResponse =
-                    await this.paymentStatus.getPaymentStatus(
-                      transactionResponse.data.id,
-                    );
-                  if (paymentStatusResponse.data.status === 'APPROVED') {
-                    const updatedTransaction = await this.update(
-                      createdTransaction.id,
-                      {
-                        status: TransactionStatus.COMPLETED,
-                      },
-                    );
-                  }
-                }
-                return transactionResponse;
-              }
-            }
-          } catch {
-            throw new Error('No se pudo obtener el token');
-          }
+
+      if (!createdTransaction) {
+        return {
+          httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Ocurrió un error al procesar la venta.',
+        };
+      }
+
+      const tokenizationResponse = await this.tokenizeCard.tonkenizateCard(
+        cardData.number,
+        cardData.exp_month,
+        cardData.exp_year,
+        cardData.cvc,
+        cardData.card_holder,
+      );
+      const { status, data } = tokenizationResponse;
+      const { id } = data;
+
+      if (status !== 'CREATED') {
+        return {
+          httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Ocurrió un error al comunicarse con su banco.',
+        };
+      }
+
+      try {
+        const acceptanceTokenResponse =
+          await this.getAcceptanceToken.getAcceptanceToken();
+
+        const acceptance_token =
+          acceptanceTokenResponse.data.presigned_acceptance.acceptance_token;
+
+        if (!acceptance_token || acceptance_token === null) {
+          return {
+            httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Ocurrió un error al comunicarse con su banco.',
+          };
         }
-      } else {
-        throw new Error('No se pudo crear la transacción');
+
+        const paymentSourceResponse =
+          await this.paymentSource.createPaymentSource(
+            transaction.customer_email,
+            'CARD',
+            id,
+            acceptance_token,
+          );
+
+        if (!paymentSourceResponse || paymentSourceResponse === null) {
+          return {
+            httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Ocurrió un error al crear la fuente de pago.',
+          };
+        }
+
+        const paymentRefence = generatePaymentReference(
+          transaction.customer_email,
+          Date.now(),
+        );
+
+        const signature = generateIntegritySignature(
+          paymentRefence,
+          (transaction.baseFee + transaction.deliveryFee) * 100,
+          'COP',
+          'stagtest_integrity_nAIBuqayW70XpUqJS4qf4STYiISd89Fp',
+        );
+
+        const paymentMethod = {
+          installments: 2,
+        };
+
+        const transactionResponse = await this.transaction.createTransaction(
+          (transaction.baseFee + transaction.deliveryFee) * 100,
+          'COP',
+          signature,
+          transaction.customer_email,
+          paymentMethod,
+          paymentRefence,
+          paymentSourceResponse.data.id,
+        );
+
+        if (!transactionResponse) {
+          return {
+            httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Ocurrió un error al procesar su pago.',
+          };
+        }
+
+        const paymentStatusResponse = await this.paymentStatus.getPaymentStatus(
+          transactionResponse.data.id,
+        );
+
+        if (paymentStatusResponse.data.status === 'APPROVED') {
+          var updatedTransaction = await this.update(createdTransaction.id, {
+            status: TransactionStatus.APPROVED,
+          });
+        }
+
+        return {
+          httpStatus: HttpStatus.OK,
+          message: 'Transacción Aprobada',
+          data: updatedTransaction,
+        };
+      } catch {
+        throw new Error('No se pudo obtener el token');
       }
     } catch (error) {
       throw new Error(`Error al crear la transacción: ${error.message}`);
