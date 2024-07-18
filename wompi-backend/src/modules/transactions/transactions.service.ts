@@ -10,6 +10,9 @@ import { Transactions } from 'src/integrations/wompi/create-transaction.service'
 import { generatePaymentReference } from 'src/helpers/crypto/paymentReference';
 import { TransactionStatus } from 'src/helpers/enum/transactionStatusEnum';
 import { TransactionCurrentStatus } from 'src/integrations/wompi/get-transactionStatus';
+import { TransactionDetailsService } from '../transaction-details/transaction-details.service';
+import { UpdateProduct } from '../products/dto/update-product.dto';
+import { ProductsService } from '../products/products.service';
 
 @Injectable()
 export class TransactionsService {
@@ -20,6 +23,8 @@ export class TransactionsService {
     private paymentSource: PaymentSource,
     private transaction: Transactions,
     private paymentStatus: TransactionCurrentStatus,
+    private transactionDetails: TransactionDetailsService,
+    private productService: ProductsService,
   ) {}
 
   async createTransaction(transaction: CreateTransactionDto) {
@@ -138,6 +143,57 @@ export class TransactionsService {
           var updatedTransaction = await this.update(createdTransaction.id, {
             status: TransactionStatus.APPROVED,
           });
+
+          if (!updatedTransaction) {
+            return {
+              httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+              message:
+                'No se pudo actualizar el estado interno de la transacción',
+            };
+          }
+
+          var addTransactionsDetail = await this.transactionDetails.create({
+            quantity: 2,
+            unitPrice: 7000,
+            productId: 1,
+            transactionId: 9,
+          });
+
+          if (!addTransactionsDetail) {
+            return {
+              httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+              message: 'Hubo un problema al realizar la transacción',
+              data: updatedTransaction,
+            };
+          }
+        }
+
+        const productData = await this.productService.findOne(
+          addTransactionsDetail.data.createdData.productId,
+        );
+
+        if (!productData) {
+          return {
+            httpStatus: HttpStatus.NO_CONTENT,
+            message: 'No se encontró el producto',
+          };
+        }
+
+        const newStock =
+          productData.stock - addTransactionsDetail.data.createdData.quantity;
+
+        const updatedProduct = await this.productService.update(
+          addTransactionsDetail.data.createdData.productId,
+          {
+            stock: newStock,
+          },
+        );
+
+        if (!updatedProduct) {
+          return {
+            httpStatus: HttpStatus.NO_CONTENT,
+            message: 'No se encontró el producto',
+          };
         }
 
         return {
