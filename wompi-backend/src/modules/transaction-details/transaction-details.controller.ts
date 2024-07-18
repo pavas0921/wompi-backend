@@ -1,13 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TransactionDetailsService } from './transaction-details.service';
 import { CreateTransactionDetailDto } from './dto/create-transaction-detail.dto';
 import { UpdateTransactionDetailDto } from './dto/update-transaction-detail.dto';
 
 @Controller('transaction-details')
 export class TransactionDetailsController {
-  constructor(private readonly transactionDetailsService: TransactionDetailsService) {}
+  constructor(
+    private readonly transactionDetailsService: TransactionDetailsService,
+  ) {}
 
-  @Post()
+  @Post('/')
   create(@Body() createTransactionDetailDto: CreateTransactionDetailDto) {
     return this.transactionDetailsService.create(createTransactionDetailDto);
   }
@@ -23,8 +33,14 @@ export class TransactionDetailsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTransactionDetailDto: UpdateTransactionDetailDto) {
-    return this.transactionDetailsService.update(+id, updateTransactionDetailDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateTransactionDetailDto: UpdateTransactionDetailDto,
+  ) {
+    return this.transactionDetailsService.update(
+      +id,
+      updateTransactionDetailDto,
+    );
   }
 
   @Delete(':id')
