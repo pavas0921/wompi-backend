@@ -5,6 +5,11 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
 import { TransactionDetailsModule } from './modules/transaction-details/transaction-details.module';
 
 @Module({
-  imports: [ProductsModule, CustomerModule, TransactionsModule, TransactionDetailsModule],
+  imports: [
+    ProductsModule,
+    CustomerModule,
+    TransactionsModule,
+    TransactionDetailsModule,
+  ],
 })
 export class AppModule {}
