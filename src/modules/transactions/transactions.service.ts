@@ -163,7 +163,7 @@ export class TransactionsService {
             quantity: productReq.productQty,
             unitPrice: productReq.productPrice,
             productId: productReq.productId,
-            transactionId: 2,
+            transactionId: updatedTransaction.id,
           });
 
           if (!addTransactionsDetail) {
