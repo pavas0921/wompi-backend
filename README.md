@@ -47,9 +47,9 @@
 - URL de la app: https://frontendtestjob.netlify.app/
 
 
-##Modelo base de Datos
-##![image](https://github.com/user-attachments/assets/e7f3661a-f08a-49b3-a9e9-14d717a4d1dd)
+## Modelo base de Datos
+## ![image](https://github.com/user-attachments/assets/e7f3661a-f08a-49b3-a9e9-14d717a4d1dd)
 
 
-#Autor:
-Carlos Andrés Pavas Correa
+###Autor:
+##Carlos Andrés Pavas Correa
