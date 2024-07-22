@@ -1,73 +1,55 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Prueba de Desarrollo FullStack
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Funcionalidades
+1. **Página de Producto**: Muestra los productos disponibles en el inventario, incluyendo descripción y precio.
+2. **Proceso de Pago**: Permite al usuario ingresar información de la tarjeta de crédito y datos de entrega.
+3. **Resumen del Pago**: Muestra un resumen con el estado de la transacción el producto comprado y los datos de entrega.
+4. **Gestión de Transacciones**: Crea y actualiza transacciones en el backend integrandose con la API de pasarela.
+5. **Actualización de Inventario**: Reduce la cantidad de productos en el inventario tras una compra exitosa.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tecnologías Utilizadas
 
-## Description
+### Frontend
+- ReactJS
+- Redux Toolkit para manejo del estado global
+- SaSS para estilos
+- React Hook Form para validación de Formularios
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- ### Backend
+- NestJS
+- Prisma ORM con PostgreSQL
+- Arquitectura Hexagonal y Patrón de Puertos y Adaptadores
 
-## Installation
+### Frontend
+- `/src`: Código fuente de la aplicación React.
+- `/src/components`: Componentes reutilizables.
+- `/src/features`: Configuración de Redux y slices.
+- `/src/app`: Configuracion store de Redux.
 
-```bash
-$ npm install
-```
+### Backend
+- `/src`: Código fuente de la API NestJS.
+- `/src/modules`: Módulos organizados por funcionalidades (productos, transacciones, etc.).
+- `/src/integrations`: Integraciones con servicios externos
+- `/prisma`: Archivos de configuración y migración de Prisma.
 
-## Running the app
+## Endpoints de la API
+- ### Productos
+- `GET /products`: Obtener lista de productos.
+- `POST /products/create`: Obtener detalles de un producto.
 
-```bash
-# development
-$ npm run start
+### Transacciones
+- `POST /transactions`: Crear una nueva transacción.
 
-# watch mode
-$ npm run start:dev
+## Despliegue
 
-# production mode
-$ npm run start:prod
-```
+- El backend y la base de datos están desplegados en Render
+- El Frontend está desplegada en Netlify
+- URL de la app: https://frontendtestjob.netlify.app/
 
-## Test
 
-```bash
-# unit tests
-$ npm run test
+##Modelo base de Datos
+![image](https://github.com/user-attachments/assets/e7f3661a-f08a-49b3-a9e9-14d717a4d1dd)
 
-# e2e tests
-$ npm run test:e2e
 
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+#Autor:
+Carlos Andrés Pavas Correa
