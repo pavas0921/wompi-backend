@@ -1,5 +1,8 @@
 # Prueba de Desarrollo FullStack
 
+## Nota 
+### El backend está desplegado en un servicio con una capa gratuita por lo que la primera solicitud se puede tornar lenta ya que la instancia se apaga al detectar inactividad. 
+
 ## Funcionalidades
 1. **Página de Producto**: Muestra los productos disponibles en el inventario, incluyendo descripción y precio.
 2. **Proceso de Pago**: Permite al usuario ingresar información de la tarjeta de crédito y datos de entrega.
